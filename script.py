@@ -14,13 +14,9 @@ def ingest_stock_data(ticker, start_date, end_date):
 
 # Function to clean the data
 def clean_data(df):
-    # Drop rows with NaN values
-    df = df.dropna().copy()  # Use .copy() to avoid SettingWithCopyWarning
-    
-    # Remove outliers using z-score method
+    df = df.dropna().copy()  # Drop rows with NaN values
     z_scores = ((df - df.mean()) / df.std()).abs()
     df = df[(z_scores < 3).all(axis=1)]  # Keep only rows where z-score < 3
-    
     return df
 
 # Function to calculate technical indicators
@@ -28,32 +24,24 @@ def calculate_technical_indicators(df):
     # Calculate moving averages (e.g., 50-day and 200-day)
     df['MA_50'] = df['Close'].rolling(window=50).mean()
     df['MA_200'] = df['Close'].rolling(window=200).mean()
-    
     # Calculate Bollinger Bands
     window = 20
     df['MA'] = df['Close'].rolling(window=window).mean()
     df['std'] = df['Close'].rolling(window=window).std()
     df['Upper_BB'] = df['MA'] + 2 * df['std']
     df['Lower_BB'] = df['MA'] - 2 * df['std']
-    
     # Calculate RSI (Relative Strength Index)
     delta = df['Close'].diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
     rs = gain / loss
     df['RSI'] = 100 - (100 / (1 + rs))
-    
     return df
 
 # Function to engineer additional features
 def engineer_features(df):
-    # Calculate volatility measures (e.g., standard deviation of returns)
     df['Volatility'] = df['Close'].pct_change().rolling(window=20).std() * np.sqrt(252)
-    
-    # Calculate price patterns or momentum indicators
-    # For example, we can calculate the difference between the current close price and the 50-day moving average
     df['Price_vs_MA50'] = df['Close'] - df['MA_50']
-    
     return df
 
 # Function to store data in a SQLite database partitioned by year and month
@@ -122,8 +110,6 @@ if __name__ == "__main__":
         
         # Store data in SQLite database partitioned by year and month
         store_partitioned_data(df_features, database_name='stock_data', table_name=ticker)
-
-
 
     # Fetch and display data from all tables
     cursor = conn.cursor()
