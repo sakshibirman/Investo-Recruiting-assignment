@@ -1,5 +1,5 @@
 # Investo-Recruiting-assignment
-## Assignment I was given for Selection round by Investo Team.
+## Assignment given for Selection round by Investo Team.
 
 ### Scenario: 
 You are a data engineer for a hedge fund that trades based on technical analysis. Your team needs a robust pipeline to process and analyze large volumes of historical stock data efficiently. You are tasked with building a data pipeline that cleans, transforms, and aggregates Open, High, Low, and Close (OHLC) data for further analysis and model development.
